@@ -12,53 +12,26 @@ namespace WebAPI.Repository
     public class Repo : IRepo
     {
         private readonly IDataService dataService;
+        public List<Employee> _employeelist;
 
         public Repo(IDataService dataService)
         {
+            _employeelist = new List<Employee>()
+            {
+                new Employee() { Id = "1" ,Name = "Sourav", Email="souravresides@gmail.com"}
+            };
             this.dataService = dataService;
         }
-        public void AddEmployee(Employee employee)
+        public Employee AddEmployee(Employee employee)
         {
-            string strConString = dataService.GetConnectionString();
-            using (SqlConnection con = new SqlConnection(strConString))
-            {
-                con.Open();
-                string query = "Insert into Users (Name, Email) values(@Name,@Email)";
-                SqlCommand cmd = new SqlCommand(query, con);
-                cmd.Parameters.AddWithValue("@Name", employee.Name);
-                cmd.Parameters.AddWithValue("@Email", employee.Email);
-                int i = cmd.ExecuteNonQuery();
-                con.Close();
-            }
+            employee.Id = _employeelist.Max(e => e.Id) + 1;
+            _employeelist.Add(employee);
+            return employee;
         }
 
         public IEnumerable<Employee> GetDetails()
         {
-            List<Employee> lstEmployee = new List<Employee>();
-            string strConString = dataService.GetConnectionString();
-            using (SqlConnection con = new SqlConnection(strConString))
-            {
-                try
-                {
-                    con.Open();
-                    SqlCommand cmd = new SqlCommand("Select * from Users", con);
-                    SqlDataReader dr = cmd.ExecuteReader();
-
-                    while (dr.Read())
-                    {
-                        Employee employee = new Employee();
-                        employee.Name = Convert.ToString(dr["Name"]);
-                        employee.Email = Convert.ToString(dr["Email"]);
-                        lstEmployee.Add(employee);
-                    }
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-                return lstEmployee;
-            }
+            return _employeelist;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace WebAPI.Repository
 {
     public interface IRepo
     {
-        void AddEmployee(Employee employee);
+        Employee AddEmployee(Employee employee);
         IEnumerable<Employee> GetDetails();
     }
 }
